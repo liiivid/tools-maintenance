@@ -1,15 +1,15 @@
-# PowerShell Maintenance Toolkit by ChatGPT
+
 
 function Show-Menu {
     Clear-Host
     Write-Host "=====================================" -ForegroundColor Cyan
-    Write-Host "   🛠️  POWERTOOLS - PC Maintenance Menu"
+    Write-Host "   Jafar Gans😎|🛠️PC Maintenance Menu"
     Write-Host "=====================================" -ForegroundColor Cyan
-    Write-Host "1. Cek koneksi jaringan (Ping Google)"
+    Write-Host "1. Cek koneksi jaringan (Ping)"
     Write-Host "2. Cek kesehatan HDD/SSD"
-    Write-Host "3. Cek integritas sistem Windows"
+    Write-Host "3. Cek kesehatan Windows(sfc)"
     Write-Host "4. Instal aplikasi via CLI (scoop)"
-    Write-Host "5. Aktivasi Windows otomatis"
+    Write-Host "5. Aktivasi Windows/office"
     Write-Host "0. Keluar"
     Write-Host ""
 }
@@ -40,7 +40,7 @@ function Install-Aplikasi {
     Write-Host "`n📦 Instalasi aplikasi via Scoop" -ForegroundColor Yellow
 
     if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-        Write-Host "🔧 Menginstal Scoop..." -ForegroundColor Cyan
+        Write-Host "🔧 Menginstal Scoop dulu..." -ForegroundColor Cyan
         Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
         irm get.scoop.sh | iex
     }
@@ -51,8 +51,9 @@ function Install-Aplikasi {
     Write-Host "3. VLC Media Player"
     Write-Host "4. Notepad++"
     Write-Host "5. Git"
-    Write-Host "6. Lainnya (masukkan nama manual)"
-    $choice = Read-Host "Masukkan nomor aplikasi yang ingin diinstal"
+    Write-Host "6. Cari dan install aplikasi lain (ketik nama aplikasi)"
+
+    $choice = Read-Host "Masukkan nomor aplikasi (1-6) atau langsung ketik nama aplikasi untuk instalasi"
 
     switch ($choice) {
         "1" { scoop install googlechrome }
@@ -61,13 +62,27 @@ function Install-Aplikasi {
         "4" { scoop install notepadplusplus }
         "5" { scoop install git }
         "6" {
-            $app = Read-Host "Masukkan nama aplikasi (sesuai scoop)"
-            scoop install $app
+            $app = Read-Host "Masukkan nama aplikasi (contoh: nodejs, vscode, etc)"
+            if (-not [string]::IsNullOrWhiteSpace($app)) {
+                Write-Host "Mencoba install $app ..."
+                scoop install $app
+            } else {
+                Write-Host "Nama aplikasi kosong, batal install." -ForegroundColor Red
+            }
         }
-        default { Write-Host "Pilihan tidak valid." }
+        default {
+            # Kalau input bukan nomor 1-6, coba anggap input itu nama aplikasi langsung
+            if (-not [string]::IsNullOrWhiteSpace($choice)) {
+                Write-Host "Mencoba install $choice ..."
+                scoop install $choice
+            } else {
+                Write-Host "Pilihan tidak valid." -ForegroundColor Red
+            }
+        }
     }
     Pause
 }
+
 
 function Aktivasi-Windows {
     Write-Host "`n🪪 Menjalankan aktivasi Windows..." -ForegroundColor Yellow
