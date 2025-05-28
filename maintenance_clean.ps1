@@ -36,52 +36,41 @@ function Cek-Windows {
     Pause
 }
 
-function Install-Aplikasi {
-    Write-Host "`n📦 Instalasi aplikasi via Scoop" -ForegroundColor Yellow
-
+function Install-ScoopIfNeeded {
     if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-        Write-Host "🔧 Menginstal Scoop dulu..." -ForegroundColor Cyan
+        Write-Host "Scoop belum terpasang. Menginstal Scoop sekarang..." -ForegroundColor Cyan
+
+        # Pastikan ExecutionPolicy cukup longgar
         Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-        irm get.scoop.sh | iex
-    }
 
-    Write-Host "`nDaftar aplikasi populer:"
-    Write-Host "1. Google Chrome"
-    Write-Host "2. 7zip"
-    Write-Host "3. VLC Media Player"
-    Write-Host "4. Notepad++"
-    Write-Host "5. Git"
-    Write-Host "6. Cari dan install aplikasi lain (ketik nama aplikasi)"
-
-    $choice = Read-Host "Masukkan nomor aplikasi (1-6) atau langsung ketik nama aplikasi untuk instalasi"
-
-    switch ($choice) {
-        "1" { scoop install googlechrome }
-        "2" { scoop install 7zip }
-        "3" { scoop install vlc }
-        "4" { scoop install notepadplusplus }
-        "5" { scoop install git }
-        "6" {
-            $app = Read-Host "Masukkan nama aplikasi (contoh: nodejs, vscode, etc)"
-            if (-not [string]::IsNullOrWhiteSpace($app)) {
-                Write-Host "Mencoba install $app ..."
-                scoop install $app
-            } else {
-                Write-Host "Nama aplikasi kosong, batal install." -ForegroundColor Red
-            }
+        # Install Scoop secara manual dengan Invoke-WebRequest + Expand-Archive
+        $scoopDir = "$env:USERPROFILE\scoop"
+        if (-not (Test-Path $scoopDir)) {
+            New-Item -ItemType Directory -Path $scoopDir -Force | Out-Null
         }
-        default {
-            # Kalau input bukan nomor 1-6, coba anggap input itu nama aplikasi langsung
-            if (-not [string]::IsNullOrWhiteSpace($choice)) {
-                Write-Host "Mencoba install $choice ..."
-                scoop install $choice
-            } else {
-                Write-Host "Pilihan tidak valid." -ForegroundColor Red
-            }
+
+        Write-Host "Mengunduh Scoop installer..."
+        Invoke-WebRequest -Uri "https://github.com/ScoopInstaller/Install/raw/master/install.ps1" -OutFile "$env:TEMP\scoop-install.ps1"
+
+        Write-Host "Menjalankan installer Scoop..."
+        try {
+            powershell -NoProfile -ExecutionPolicy RemoteSigned -File "$env:TEMP\scoop-install.ps1"
+            Write-Host "Scoop berhasil diinstal."
         }
+        catch {
+            Write-Host "Gagal menginstal Scoop. Silakan instal secara manual." -ForegroundColor Red
+            return $false
+        }
+
+        # Reload environment PATH supaya scoop dikenali dalam sesi ini
+        $env:PATH += ";$env:USERPROFILE\scoop\shims"
     }
-    Pause
+    else {
+        Write-Host "Scoop sudah terpasang." -ForegroundColor Green
+    }
+    return $true
 }
+
 
 
 function Aktivasi-Windows {
