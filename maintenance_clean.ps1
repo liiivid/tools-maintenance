@@ -1,10 +1,10 @@
-# PowerShell Maintenance Toolkit by ChatGPT - Refactored
+
 
 function Show-Menu {
     Clear-Host
-    Write-Host "=====================================" -ForegroundColor Cyan
-    Write-Host "   🛠️  POWERTOOLS - PC Maintenance Menu"
-    Write-Host "=====================================" -ForegroundColor Cyan
+    Write-Host "=======Jafar Gans😎=======" -ForegroundColor Cyan
+    Write-Host " 🛠️PC Maintenance Menu🛠️"
+    Write-Host "===========================" -ForegroundColor Cyan
     Write-Host "1. Cek koneksi jaringan (Ping)"
     Write-Host "2. Cek kesehatan HDD/SSD"
     Write-Host "3. Cek kesehatan Windows (sfc)"
@@ -35,7 +35,7 @@ function Install-ScoopIfNeeded {
 
 function Cek-Jaringan {
     Write-Host "`n🔍 Membuka jendela baru untuk ping google.com ..." -ForegroundColor Yellow
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "ping google.com"
+    Start-Process pwsh -ArgumentList "-NoExit", "-Command", "ping google.com"
 }
 
 function Cek-HDD {
@@ -50,12 +50,12 @@ pause
 '@
     $tempScript = "$env:TEMP\cek-hdd.ps1"
     $script | Out-File -Encoding UTF8 -FilePath $tempScript
-    Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy Bypass", "-File `"$tempScript`""
+    Start-Process pwsh -ArgumentList "-NoExit", "-ExecutionPolicy Bypass", "-File `"$tempScript`""
 }
 
 function Cek-Windows {
     Write-Host "`n🧱 Membuka jendela baru untuk menjalankan 'sfc /scannow' ..." -ForegroundColor Yellow
-    Start-Process powershell -Verb RunAs -ArgumentList "-NoExit", "-Command", "sfc /scannow"
+    Start-Process pwsh -Verb RunAs -ArgumentList "-NoExit", "-Command", "sfc /scannow"
 }
 
 function Install-Aplikasi {
@@ -75,18 +75,13 @@ function Install-Aplikasi {
     $choice = Read-Host "Pilih nomor atau ketik langsung nama aplikasi"
 
     $app = switch ($choice) {
-        "1" { "googlechrome" }
-        "2" { "7zip" }
-        "3" { "vlc" }
-        "4" { "notepadplusplus" }
-        "5" { "git" }
-        "6" { Read-Host "Masukkan nama aplikasi sesuai scoop" }
+        "1" { Read-Host "Search apps" }
         default { $choice }
     }
 
     if (-not [string]::IsNullOrWhiteSpace($app)) {
         Write-Host "🚀 Menginstal $app di jendela baru..."
-        Start-Process powershell -ArgumentList "-NoExit", "-Command", "scoop install $app"
+        Start-Process pwsh -ArgumentList "-NoExit", "-Command", "scoop install $app"
     } else {
         Write-Host "❌ Nama aplikasi tidak valid." -ForegroundColor Red
     }
@@ -94,7 +89,7 @@ function Install-Aplikasi {
 
 function Aktivasi-Windows {
     Write-Host "`n🪪 Membuka jendela baru untuk aktivasi Windows..." -ForegroundColor Yellow
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "irm https://get.activated.win | iex"
+    Start-Process pwsh -ArgumentList "-NoExit", "-Command", "irm https://get.activated.win | iex"
 }
 
 # MENU LOOP
