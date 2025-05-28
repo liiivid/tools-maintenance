@@ -35,7 +35,7 @@ function Install-ScoopIfNeeded {
 
 function Cek-Jaringan {
     Write-Host "`n🔍 Membuka jendela baru untuk ping google.com ..." -ForegroundColor Yellow
-    Start-Process pwsh -ArgumentList "-NoExit", "-Command", "ping google.com"
+    pwsh -ArgumentList "-NoExit", "-Command", "ping google.com"
 }
 
 function Cek-HDD {
@@ -50,7 +50,7 @@ pause
 '@
     $tempScript = "$env:TEMP\cek-hdd.ps1"
     $script | Out-File -Encoding UTF8 -FilePath $tempScript
-    Start-Process pwsh -ArgumentList "-NoExit", "-ExecutionPolicy Bypass", "-File `"$tempScript`""
+    -ArgumentList "-NoExit", "-ExecutionPolicy Bypass", "-File `"$tempScript`""
 }
 
 function Cek-Windows {
