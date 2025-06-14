@@ -8,7 +8,7 @@ function Show-Menu {
     Write-Host "1. Cek koneksi jaringan (Ping)"
     Write-Host "2. Cek kesehatan HDD/SSD"
     Write-Host "3. Cek kesehatan Windows(sfc)"
-    Write-Host "4. Instal aplikasi via CLI (scoop)"
+    Write-Host "4. Instal aplikasi via CLI (winget)"
     Write-Host "5. Aktivasi Windows/office"
     Write-Host "0. Keluar"
     Write-Host ""
@@ -41,7 +41,8 @@ function Install-Aplikasi {
     $program = Read-Host "Masukkan nama program yang ingin dicari"
     
     Write-Host "`📦 Mencari program: $program" -ForegroundColor Yellow
-    winget search $program
+    winget search $program | Format-Table
+
 }
 
 
