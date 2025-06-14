@@ -1,9 +1,9 @@
-# PowerShell Maintenance Toolkit by ChatGPT
+
 
 function Show-Menu {
     Clear-Host
     Write-Host "=====================================" -ForegroundColor Cyan
-    Write-Host "   🛠️  POWERTOOLS - PC Maintenance Menu"
+    Write-Host "   🛠️  Jfr21(づ￣ 3￣)づ - PC Maintenance Menu"
     Write-Host "=====================================" -ForegroundColor Cyan
     Write-Host "1. Cek koneksi jaringan (Ping)"
     Write-Host "2. Cek kesehatan HDD/SSD"
@@ -37,37 +37,13 @@ function Cek-Windows {
 }
 
 function Install-Aplikasi {
-    Write-Host "`n📦 Instalasi aplikasi via Scoop" -ForegroundColor Yellow
-
-    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-        Write-Host "🔧 Menginstal Scoop..." -ForegroundColor Cyan
-        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-        irm get.scoop.sh | iex
-    }
-
-    Write-Host "`nDaftar aplikasi populer:"
-    Write-Host "1. Google Chrome"
-    Write-Host "2. 7zip"
-    Write-Host "3. VLC Media Player"
-    Write-Host "4. Notepad++"
-    Write-Host "5. Git"
-    Write-Host "6. Lainnya (masukkan nama manual)"
-    $choice = Read-Host "Masukkan nomor aplikasi yang ingin diinstal"
-
-    switch ($choice) {
-        "1" { scoop install googlechrome }
-        "2" { scoop install 7zip }
-        "3" { scoop install vlc }
-        "4" { scoop install notepadplusplus }
-        "5" { scoop install git }
-        "6" {
-            $app = Read-Host "Masukkan nama aplikasi (sesuai scoop)"
-            scoop install $app
-        }
-        default { Write-Host "Pilihan tidak valid." }
-    }
-    Pause
+    Write-Host "`📦 Instalasi Program via Winget" -ForegroundColor Yellow
+    $program = Read-Host "Masukkan nama program yang ingin dicari"
+    
+    Write-Host "`📦 Mencari program: $program" -ForegroundColor Yellow
+    winget search $program
 }
+
 
 function Aktivasi-Windows {
     Write-Host "`n🪪 Menjalankan aktivasi Windows..." -ForegroundColor Yellow
