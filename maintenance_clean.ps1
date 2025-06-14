@@ -33,7 +33,7 @@ function Cek-HDD {
 function Cek-Windows {
     Write-Host "`n🧱 Menjalankan System File Checker (sfc /scannow) ..." -ForegroundColor Yellow
 
-    # Cek hak administrator
+    # Cek apakah dijalankan sebagai Administrator
     $isAdmin = ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent() `
     ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -43,35 +43,35 @@ function Cek-Windows {
         return
     }
 
-    # Jalankan SFC langsung dan tampilkan output secara real-time
-    sfc /scannow
+    # Jalankan sfc secara diam-diam di background
+    $job = Start-Job { sfc /scannow > $null }
 
-    # Tunggu selesai lalu cek log CBS untuk hasil terbaru
-    Start-Sleep -Seconds 2
-    $logPath = "C:\Windows\Logs\CBS\CBS.log"
-
-    if (Test-Path $logPath) {
-        $logTail = Get-Content $logPath -Tail 30
-
-        if ($logTail -match "cannot repair") {
-            Write-Host "`n🛠️  SFC menemukan file rusak yang tidak bisa diperbaiki." -ForegroundColor Red
-            Write-Host "🔧 Menjalankan DISM untuk memperbaiki image sistem..." -ForegroundColor Yellow
-            DISM /Online /Cleanup-Image /RestoreHealth
-            Write-Host "`n✅ DISM selesai. Disarankan untuk menjalankan kembali 'sfc /scannow' setelah ini." -ForegroundColor Green
-        }
-        elseif ($logTail -match "Windows Resource Protection did not find any integrity violations") {
-            Write-Host "`n✅ Tidak ditemukan kerusakan pada sistem." -ForegroundColor Green
-        }
-        else {
-            Write-Host "`nℹ️ SFC telah selesai. Untuk hasil lengkap, periksa log berikut:" -ForegroundColor Cyan
-            Write-Host "📄 $logPath"
-        }
-    } else {
-        Write-Host "⚠️ Tidak dapat menemukan log CBS untuk memeriksa hasil." -ForegroundColor DarkYellow
+    # Tampilkan animasi loading selama proses berjalan
+    $dots = "."
+    while ($job.State -eq "Running") {
+        Write-Host -NoNewline "`r⏳ Memindai sistem $dots  "
+        Start-Sleep -Milliseconds 500
+        $dots += "."
+        if ($dots.Length -gt 10) { $dots = "." }
     }
 
-    Pause
-}
+    # Tunggu job selesai dan ambil output log
+    Receive-Job $job | Out-Null
+    Remove-Job $job
+
+    # Cek hasil dari log CBS
+    $logPath = "C:\Windows\Logs\CBS\CBS.log"
+    if (Test-Path $logPath) {
+        $logTail = Get-Content $logPath -Tail 50 -ErrorAction SilentlyContinue
+
+        if ($logTail -match "cannot repair") {
+            Write-Host "`n❌ Ditemukan file sistem yang rusak dan tidak bisa diperbaiki oleh SFC." -ForegroundColor Red
+            Write-Host "🔧 Menjalankan DISM untuk perbaikan image sistem..." -ForegroundColor Yellow
+
+            # Jalankan DISM secara langsung
+            DISM /Online /Cleanup-Image /RestoreHealth | Out-Null
+            Write-Host "`n✅ DISM selesai. Disarankan menjalankan kembali 'sfc /scannow'." -ForegroundColor Green
+        }
 
 
 
