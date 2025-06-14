@@ -43,28 +43,36 @@ function Cek-Windows {
         return
     }
 
-    # Jalankan SFC
-    $sfcResult = sfc /scannow
+    # Jalankan SFC langsung dan tampilkan output secara real-time
+    sfc /scannow
 
-    # Periksa hasil output SFC
-    if ($sfcResult -match "Windows Resource Protection found corrupt files but was unable to fix some of them") {
-        Write-Host "`n🛠️  Ditemukan kerusakan yang tidak bisa diperbaiki oleh SFC." -ForegroundColor Red
-        Write-Host "🔧 Menjalankan DISM untuk memperbaiki image sistem..." -ForegroundColor Yellow
+    # Tunggu selesai lalu cek log CBS untuk hasil terbaru
+    Start-Sleep -Seconds 2
+    $logPath = "C:\Windows\Logs\CBS\CBS.log"
 
-        # Jalankan DISM untuk perbaikan image
-        DISM /Online /Cleanup-Image /RestoreHealth
+    if (Test-Path $logPath) {
+        $logTail = Get-Content $logPath -Tail 30
 
-        Write-Host "`n✅ DISM selesai. Disarankan untuk menjalankan kembali 'sfc /scannow' setelah ini." -ForegroundColor Green
-    }
-    elseif ($sfcResult -match "Windows Resource Protection did not find any integrity violations") {
-        Write-Host "`n✅ Tidak ditemukan kerusakan pada sistem." -ForegroundColor Green
-    }
-    else {
-        Write-Host "`nℹ️ SFC telah selesai dijalankan. Silakan tinjau hasil di atas." -ForegroundColor Cyan
+        if ($logTail -match "cannot repair") {
+            Write-Host "`n🛠️  SFC menemukan file rusak yang tidak bisa diperbaiki." -ForegroundColor Red
+            Write-Host "🔧 Menjalankan DISM untuk memperbaiki image sistem..." -ForegroundColor Yellow
+            DISM /Online /Cleanup-Image /RestoreHealth
+            Write-Host "`n✅ DISM selesai. Disarankan untuk menjalankan kembali 'sfc /scannow' setelah ini." -ForegroundColor Green
+        }
+        elseif ($logTail -match "Windows Resource Protection did not find any integrity violations") {
+            Write-Host "`n✅ Tidak ditemukan kerusakan pada sistem." -ForegroundColor Green
+        }
+        else {
+            Write-Host "`nℹ️ SFC telah selesai. Untuk hasil lengkap, periksa log berikut:" -ForegroundColor Cyan
+            Write-Host "📄 $logPath"
+        }
+    } else {
+        Write-Host "⚠️ Tidak dapat menemukan log CBS untuk memeriksa hasil." -ForegroundColor DarkYellow
     }
 
     Pause
 }
+
 
 
 function Install-Aplikasi {
