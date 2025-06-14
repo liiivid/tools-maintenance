@@ -37,12 +37,15 @@ function Cek-Windows {
 }
 
 function Install-Aplikasi {
-    Write-Host "`📦 Instalasi Program via Winget" -ForegroundColor Yellow
-    $program = Read-Host "Masukkan nama program yang ingin dicari"
-    
-    Write-Host "`📦 Mencari program: $program" -ForegroundColor Yellow
-    winget search $program | Format-Table
-    pause
+    Start-Process powershell -ArgumentList "-NoExit -Command { 
+        Write-Host '`📦 Instalasi Program via Winget' -ForegroundColor Yellow
+        `$program = Read-Host 'Masukkan nama program yang ingin dicari'
+        Write-Host '`📦 Mencari program: `$program' -ForegroundColor Yellow
+        winget search `$program | Format-Table
+        Pause
+    }"
+}
+
 
 }
 
