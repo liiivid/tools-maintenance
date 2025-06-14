@@ -72,6 +72,7 @@ function Cek-Windows {
             DISM /Online /Cleanup-Image /RestoreHealth | Out-Null
             Write-Host "`n✅ DISM selesai. Disarankan menjalankan kembali 'sfc /scannow'." -ForegroundColor Green
         }
+    }
 
 
 
