@@ -32,9 +32,40 @@ function Cek-HDD {
 
 function Cek-Windows {
     Write-Host "`n🧱 Menjalankan System File Checker (sfc /scannow) ..." -ForegroundColor Yellow
-    Start-Process -Verb runAs powershell -ArgumentList "sfc /scannow"
+
+    # Cek hak administrator
+    $isAdmin = ([Security.Principal.WindowsPrincipal] `
+        [Security.Principal.WindowsIdentity]::GetCurrent() `
+    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+    if (-not $isAdmin) {
+        Write-Host "❌ Fungsi ini harus dijalankan sebagai Administrator!" -ForegroundColor Red
+        return
+    }
+
+    # Jalankan SFC
+    $sfcResult = sfc /scannow
+
+    # Periksa hasil output SFC
+    if ($sfcResult -match "Windows Resource Protection found corrupt files but was unable to fix some of them") {
+        Write-Host "`n🛠️  Ditemukan kerusakan yang tidak bisa diperbaiki oleh SFC." -ForegroundColor Red
+        Write-Host "🔧 Menjalankan DISM untuk memperbaiki image sistem..." -ForegroundColor Yellow
+
+        # Jalankan DISM untuk perbaikan image
+        DISM /Online /Cleanup-Image /RestoreHealth
+
+        Write-Host "`n✅ DISM selesai. Disarankan untuk menjalankan kembali 'sfc /scannow' setelah ini." -ForegroundColor Green
+    }
+    elseif ($sfcResult -match "Windows Resource Protection did not find any integrity violations") {
+        Write-Host "`n✅ Tidak ditemukan kerusakan pada sistem." -ForegroundColor Green
+    }
+    else {
+        Write-Host "`nℹ️ SFC telah selesai dijalankan. Silakan tinjau hasil di atas." -ForegroundColor Cyan
+    }
+
     Pause
 }
+
 
 function Install-Aplikasi {
     Write-Host "📦 Instalasi Program via Winget" -ForegroundColor Yellow
