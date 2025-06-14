@@ -72,9 +72,20 @@ function Cek-Windows {
             DISM /Online /Cleanup-Image /RestoreHealth | Out-Null
             Write-Host "`n✅ DISM selesai. Disarankan menjalankan kembali 'sfc /scannow'." -ForegroundColor Green
         }
+        elseif ($logTail -match "Windows Resource Protection did not find any integrity violations") {
+            Write-Host "`n✅ Sistem dalam keadaan sehat. Tidak ada kerusakan ditemukan." -ForegroundColor Green
+        }
+        else {
+            Write-Host "`nℹ️ Pemeriksaan selesai. Silakan tinjau log secara manual jika perlu:" -ForegroundColor Cyan
+            Write-Host "📄 $logPath"
+        }
+    }
+    else {
+        Write-Host "`n⚠️ Tidak dapat menemukan log CBS. Silakan cek hasil manual di Event Viewer." -ForegroundColor DarkYellow
     }
 
-
+    Pause
+}  
 
 function Install-Aplikasi {
     Write-Host "📦 Instalasi Program via Winget" -ForegroundColor Yellow
