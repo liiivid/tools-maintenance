@@ -47,7 +47,7 @@ function Install-Aplikasi {
 }
 
 
-}
+
 
 
 function Aktivasi-Windows {
