@@ -37,43 +37,36 @@ function Cek-Windows {
 }
 
 function Install-Aplikasi {
-    Start-Process powershell -ArgumentList @(
-        '-NoExit',
-        '-Command',
-@'
-Write-Host "📦 Instalasi Program via Winget" -ForegroundColor Yellow
+    Write-Host "📦 Instalasi Program via Winget" -ForegroundColor Yellow
 
-# Minta input nama program
-$program = Read-Host "Masukkan nama program yang ingin dicari"
+    # Minta input nama program
+    $program = Read-Host "Masukkan nama program yang ingin dicari"
 
-# Cari program
-Write-Host "`n📦 Mencari program: $program" -ForegroundColor Yellow
-$hasil = winget search "$program"
+    # Cari program
+    Write-Host "`n📦 Mencari program: $program" -ForegroundColor Yellow
+    $hasil = winget search "$program"
 
-if (-not $hasil) {
-    Write-Host "❌ Tidak ditemukan hasil untuk: $program" -ForegroundColor Red
+    if (-not $hasil) {
+        Write-Host "❌ Tidak ditemukan hasil untuk: $program" -ForegroundColor Red
+        return
+    }
+
+    # Tampilkan hasil pencarian
+    $hasil | Format-Table
+    Write-Host "`nMasukkan ID atau nama program yang ingin diinstal dari daftar di atas." -ForegroundColor Cyan
+    $pilihan = Read-Host "Masukkan ID atau nama program"
+
+    if ([string]::IsNullOrWhiteSpace($pilihan)) {
+        Write-Host "⚠️ Tidak ada input. Proses dibatalkan." -ForegroundColor Red
+        return
+    }
+
+    Write-Host "`n🚀 Menginstal: $pilihan" -ForegroundColor Green
+    winget install --id "$pilihan" --exact
+
     Pause
-    exit
 }
 
-# Tampilkan hasil pencarian
-$hasil | Format-Table
-Write-Host "`nMasukkan ID atau nama program yang ingin diinstal dari daftar di atas." -ForegroundColor Cyan
-$pilihan = Read-Host "Masukkan ID atau nama program"
-
-if ([string]::IsNullOrWhiteSpace($pilihan)) {
-    Write-Host "⚠️ Tidak ada input. Proses dibatalkan." -ForegroundColor Red
-    Pause
-    exit
-}
-
-Write-Host "`n🚀 Menginstal: $pilihan" -ForegroundColor Green
-winget install --id "$pilihan" --exact
-
-Pause
-'@
-    )
-}
 
 
 
