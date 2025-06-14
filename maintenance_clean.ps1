@@ -40,46 +40,38 @@ function Install-Aplikasi {
     Start-Process powershell -ArgumentList @(
         '-NoExit',
         '-Command',
-        @"
-Write-Host '📦 Instalasi Program via Winget' -ForegroundColor Yellow
+@'
+Write-Host "📦 Instalasi Program via Winget" -ForegroundColor Yellow
 
-# Meminta input nama program
-\$program = Read-Host 'Masukkan nama program yang ingin dicari'
+# Minta input nama program
+$program = Read-Host "Masukkan nama program yang ingin dicari"
 
-# Mencari program dan menyimpannya ke variabel
-Write-Host "`n📦 Mencari program: \$program" -ForegroundColor Yellow
-\$hasil = winget search "\$program"
+# Cari program
+Write-Host "`n📦 Mencari program: $program" -ForegroundColor Yellow
+$hasil = winget search "$program"
 
-if (-not \$hasil) {
-    Write-Host "❌ Tidak ditemukan hasil untuk: \$program" -ForegroundColor Red
+if (-not $hasil) {
+    Write-Host "❌ Tidak ditemukan hasil untuk: $program" -ForegroundColor Red
     Pause
     exit
 }
 
-# Tampilkan hasil pencarian sebagai tabel dan indeks
-\$daftar = \$hasil | Select-String '^\s*\d+\s+\S+.*'
-if (-not \$daftar) {
-    Write-Host "`n📄 Menampilkan hasil lengkap:" -ForegroundColor Cyan
-    \$hasil
-    Pause
-    exit
-}
+# Tampilkan hasil pencarian
+$hasil | Format-Table
+Write-Host "`nMasukkan ID atau nama program yang ingin diinstal dari daftar di atas." -ForegroundColor Cyan
+$pilihan = Read-Host "Masukkan ID atau nama program"
 
-\$hasil | Format-Table
-Write-Host "`nPilih salah satu program berdasarkan ID atau nama lengkap dari daftar di atas." -ForegroundColor Cyan
-\$pilihan = Read-Host 'Masukkan ID atau Nama paket untuk diinstal'
-
-if ([string]::IsNullOrWhiteSpace(\$pilihan)) {
+if ([string]::IsNullOrWhiteSpace($pilihan)) {
     Write-Host "⚠️ Tidak ada input. Proses dibatalkan." -ForegroundColor Red
     Pause
     exit
 }
 
-Write-Host "`n🚀 Menginstal: \$pilihan" -ForegroundColor Green
-winget install --id "\$pilihan" --exact
+Write-Host "`n🚀 Menginstal: $pilihan" -ForegroundColor Green
+winget install --id "$pilihan" --exact
 
 Pause
-"@
+'@
     )
 }
 
