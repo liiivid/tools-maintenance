@@ -42,6 +42,7 @@ function Install-Aplikasi {
     
     Write-Host "`📦 Mencari program: $program" -ForegroundColor Yellow
     winget search $program | Format-Table
+    pause
 
 }
 
