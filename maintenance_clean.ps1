@@ -3,7 +3,7 @@
 function Show-Menu {
     Clear-Host
     Write-Host "===========================================" -ForegroundColor Cyan
-    Write-Host "Jfr21(づ￣ 3￣)づ - 🛠️ PC Maintenance Menu"
+    Write-Host "Jfr21¬_¬ - 🛠️ PC Maintenance Menu"
     Write-Host "===========================================" -ForegroundColor Cyan
     Write-Host "1. Cek koneksi jaringan (Ping)"
     Write-Host "2. Cek kesehatan HDD/SSD"
